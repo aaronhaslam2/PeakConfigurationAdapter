@@ -200,7 +200,7 @@ namespace PeakConfigurationAdapter
         /// <param name="baudRateKbits"></param>
         public void CreateCanChannel(int channel, string peakAddress, string destinationAddress, int port, double baudRateKbits)
         {
-            // Get route numbers
+            // Get route number
             int routeNumber = channel * 2;
 
             // Connect to Peak
