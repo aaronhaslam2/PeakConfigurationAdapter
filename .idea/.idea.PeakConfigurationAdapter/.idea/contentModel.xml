@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\Aaron.Haslam\.Rider2019.3\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\Aaron.Haslam\.Rider2019.3\system\resharper-host\local\Transient\ReSharperHost\v193\SolutionCaches\_PeakConfigurationAdapter.-710054859.00" t="ExcludeRecursive" />
+    <e p="C:\Users\Aaron.Haslam\Repos\PeakConfigurationAdapter\PeakConfigurationAdapter" t="IncludeFlat">
+      <e p="packages" t="ExcludeRecursive" />
+      <e p="PeakConfigurationAdapter" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="IPeakConfigurationAdapter.cs" t="Include" />
+        <e p="obj" t="ExcludeRecursive" />
+        <e p="packages.config" t="Include" />
+        <e p="PeakConfigurationAdapter.cs" t="Include" />
+        <e p="PeakConfigurationAdapter.csproj" t="IncludeRecursive" />
+        <e p="Properties" t="Include">
+          <e p="AssemblyInfo.cs" t="Include" />
+        </e>
+      </e>
+      <e p="PeakConfigurationAdapter.sln" t="IncludeFlat" />
+      <e p="Test" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="obj" t="ExcludeRecursive" />
+        <e p="packages.config" t="Include" />
+        <e p="Program.cs" t="Include" />
+        <e p="Properties" t="Include">
+          <e p="AssemblyInfo.cs" t="Include" />
+        </e>
+        <e p="Test.csproj" t="IncludeRecursive" />
+      </e>
+    </e>
+  </component>
+</project>
