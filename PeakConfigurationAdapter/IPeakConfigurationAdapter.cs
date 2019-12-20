@@ -7,15 +7,15 @@
 
         (string username, string password) GetLoginCredentials();
         
-        void CreateSendRoute_CanToIp(string peakAddress, string destinationAddress, int routeNumber, int channel, int port);
+        void CreateSendRoute_CanToIp(string peakIpAddress, string targetIpAddress, int routeNumber, int channel, int port);
 
-        void CreateReceiveRoute_IpToCan(string peakAddress, int routeNumber, int channel, int port);
+        void CreateReceiveRoute_IpToCan(string peakIpAddress, int routeNumber, int channel, int port);
 
-        void RemoveAllRoutes(string peakAddress);
+        void RemoveAllRoutes(string peakIpAddress);
 
-        void SetChannelBaudRate(string peakAddress, int channel, double baudRateKbits);
+        void SetChannelBaudRate(string peakIpAddress, int channel, double baudRateKbits);
 
-        void CreateCanChannel(int channel, string peakAddress, string destinationAddress, int port, double baudRateKbits);
+        void CreateCanChannel(int channel, string peakIpAddress, string targetIpAddress, int port, double baudRateKbits);
         
     }
 }

@@ -9,23 +9,10 @@ namespace PeakConfigurationAdapter
     {
         private string _usernamePeakSystem = "admin";
         private string _passwordPeakSystem = "admin";
-        
-        // private enum CanBaudRate
-        // {
-        //     [Description("10KBaud")] CanBaud10K = 10000,
-        //     [Description("20KBaud")] CanBaud20K = 20000,
-        //     [Description("50KBaud")] CanBaud50K = 50000,
-        //     [Description("100KBaud")] CanBaud100K = 100000,
-        //     [Description("125KBaud")] CanBaud125K = 125000,
-        //     [Description("250KBaud")] CanBaud250K = 250000,
-        //     [Description("500KBaud")] CanBaud500K = 500000,
-        //     [Description("800KBaud")] CanBaud800K = 800000,
-        //     [Description("1MBaud")] CanBaud_1M = 1000000
-        // };
-        
-        private (RestClient, RestRequest, IRestResponse) loginToPeak(string peakAddress, string username, string password)
+
+        private (RestClient, RestRequest, IRestResponse) loginToPeak(string peakIpAddress, string username, string password)
         {
-            var restClient = new RestClient("http://" + peakAddress) {CookieContainer = new CookieContainer()};
+            var restClient = new RestClient("http://" + peakIpAddress) {CookieContainer = new CookieContainer()};
 
             var restRequest = new RestRequest("bouncer.php?PW=" + username + "&UN=" + password, Method.POST);
 
@@ -40,10 +27,10 @@ namespace PeakConfigurationAdapter
         
         
         /// <summary>
-        /// Change the login username and password for the peak 
+        /// Change the username and password used to login to the peak.
         /// </summary>
-        /// <param name="newUsername"></param>
-        /// <param name="newPassword"></param>
+        /// <param name="newUsername">The new username.</param>
+        /// <param name="newPassword">The new password.</param>
         public void ChangeLoginCredentials(string newUsername, string newPassword)
         {
             _usernamePeakSystem = newUsername;
@@ -51,28 +38,28 @@ namespace PeakConfigurationAdapter
         }
         
         /// <summary>
-        /// Returns the current username and password for the peak
+        /// Returns the current username and password  used to login to the peak.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>(string username, string password)</returns>
         public (string username, string password) GetLoginCredentials()
         {
             return (_usernamePeakSystem, _passwordPeakSystem);
         }
 
         /// <summary>
-        /// Creates a route to send data. (CAN > IP)
+        /// Creates a route to send data. <c>(CAN 🡪 IP)</c>
         /// </summary>
-        /// <param name="peakAddress"></param>
-        /// <param name="destinationAddress"></param>
-        /// <param name="routeNumber"></param>
-        /// <param name="channel"></param>
-        /// <param name="port"></param>
-        public void CreateSendRoute_CanToIp(string peakAddress, string destinationAddress, int routeNumber, int channel, int port)
+        /// <param name="peakIpAddress">IP address to the peak device.</param>
+        /// <param name="targetIpAddress">IP address to the target device.</param>
+        /// <param name="routeNumber">Route number to configure.</param>
+        /// <param name="channel">Channel number to configure.</param>
+        /// <param name="port">Port number.</param>
+        public void CreateSendRoute_CanToIp(string peakIpAddress, string targetIpAddress, int routeNumber, int channel, int port)
         {
             var ( client, request, response) =
-                loginToPeak(peakAddress, _usernamePeakSystem, _passwordPeakSystem);
+                loginToPeak(peakIpAddress, _usernamePeakSystem, _passwordPeakSystem);
 
-            var ipAddressParts = destinationAddress.Split('.');
+            var ipAddressParts = targetIpAddress.Split('.');
 
             // change can channel to 0 based array
             var adjustedCanChannel = channel - 1;
@@ -95,21 +82,21 @@ namespace PeakConfigurationAdapter
             Console.WriteLine("Route Created:\t" + 
                               "Route - " + routeNumber + "\t" +
                               "Source - CAN Channel " + channel + "\t" + 
-                              "Destination - " + destinationAddress + ":" + port
+                              "Destination - " + targetIpAddress + ":" + port
             );
         }
         
         /// <summary>
-        /// Creates a route to receive data. (IP > CAN)
+        /// Creates a route to receive data. <c>(IP 🡪 CAN)</c>
         /// </summary>
-        /// <param name="peakAddress"></param>
-        /// <param name="routeNumber"></param>
-        /// <param name="channel"></param>
-        /// <param name="port"></param>
-        public void CreateReceiveRoute_IpToCan(string peakAddress, int routeNumber, int channel, int port)
+        /// <param name="peakIpAddress">IP address to the peak device.</param>
+        /// <param name="routeNumber">Route number to configure.</param>
+        /// <param name="channel">Channel number to configure.</param>
+        /// <param name="port">Port number.</param>
+        public void CreateReceiveRoute_IpToCan(string peakIpAddress, int routeNumber, int channel, int port)
         {
             var ( client, request, response) =
-                loginToPeak(peakAddress, _usernamePeakSystem, _passwordPeakSystem);
+                loginToPeak(peakIpAddress, _usernamePeakSystem, _passwordPeakSystem);
             
             var adjustedCanChannel = channel - 1;
 
@@ -135,13 +122,13 @@ namespace PeakConfigurationAdapter
         }
         
         /// <summary>
-        /// Removes all current routes configured on the peak.
+        /// Removes all routes and channels configured on the peak.
         /// </summary>
-        /// <param name="peakAddress"></param>
-        public void RemoveAllRoutes(string peakAddress)
+        /// <param name="peakIpAddress">IP address to the peak device.</param>
+        public void RemoveAllRoutes(string peakIpAddress)
         {
             var ( client, request, response) =
-                loginToPeak(peakAddress, _usernamePeakSystem, _passwordPeakSystem);
+                loginToPeak(peakIpAddress, _usernamePeakSystem, _passwordPeakSystem);
 
             for (var count = 8; count >= 0; count--)
             {
@@ -156,19 +143,19 @@ namespace PeakConfigurationAdapter
                 }
             }
 
-            Console.WriteLine("Successfully removed all routes from PCAN at IP address: " + peakAddress);
+            Console.WriteLine("Successfully removed all routes from PCAN at IP address: " + peakIpAddress);
         }
         
         /// <summary>
-        /// Sets the baud rate for a channel.
+        /// Set the baud rate for a specific channel.
         /// </summary>
-        /// <param name="peakAddress"></param>
-        /// <param name="channel"></param>
-        /// <param name="baudRateKbits"></param>
-        public void SetChannelBaudRate(string peakAddress, int channel, double baudRateKbits)
+        /// <param name="peakIpAddress">IP address to the peak device.</param>
+        /// <param name="channel">Channel number to configure.</param>
+        /// <param name="baudRateKbits">Desired baud rate. (kbit/s)</param>
+        public void SetChannelBaudRate(string peakIpAddress, int channel, double baudRateKbits)
         {
             var ( client, request, response) =
-                loginToPeak(peakAddress, _usernamePeakSystem, _passwordPeakSystem);
+                loginToPeak(peakIpAddress, _usernamePeakSystem, _passwordPeakSystem);
             
             var baudRate = (int) baudRateKbits * 1000;
 
@@ -191,21 +178,29 @@ namespace PeakConfigurationAdapter
         }
         
         /// <summary>
-        /// Creates a send and receive route and sets the baud rate for a channel.
+        /// Creates:
+        /// <list type="bullet">
+        ///    <item><description>Send route on specified channel</description></item>
+        ///    <item><description>Receive route on specified channel</description></item>
+        /// </list>
+        /// Configures:
+        /// <list type="bullet">
+        ///    <item><description>Baud rate for specified channel</description></item>
+        /// </list>
         /// </summary>
-        /// <param name="channel"></param>
-        /// <param name="peakAddress"></param>
-        /// <param name="destinationAddress"></param>
-        /// <param name="port"></param>
-        /// <param name="baudRateKbits"></param>
-        public void CreateCanChannel(int channel, string peakAddress, string destinationAddress, int port, double baudRateKbits)
+        /// <param name="channel">Channel number to configure.</param>
+        /// <param name="peakIpAddress">IP address to the peak device.</param>
+        /// <param name="targetIpAddress">IP address to the target device.</param>
+        /// <param name="port">Port number.</param>
+        /// <param name="baudRateKbits">Desired baud rate. (kbit/s)</param>
+        public void CreateCanChannel(int channel, string peakIpAddress, string targetIpAddress, int port, double baudRateKbits)
         {
             // Get route number
             int routeNumber = channel * 2;
 
             // Connect to Peak
             var ( client, request, response) =
-                loginToPeak(peakAddress, _usernamePeakSystem, _passwordPeakSystem);
+                loginToPeak(peakIpAddress, _usernamePeakSystem, _passwordPeakSystem);
             
             ///////////////////////////////////////
             // Create IP to CAN connection
@@ -238,7 +233,7 @@ namespace PeakConfigurationAdapter
             ///////////////////////////////////////
             routeNumber--;
             
-            var ipAddressParts = destinationAddress.Split('.');
+            var ipAddressParts = targetIpAddress.Split('.');
             
             request =
                 new RestRequest(
@@ -258,7 +253,7 @@ namespace PeakConfigurationAdapter
             Console.WriteLine("Route Created:\t" + 
                               "Route - " + routeNumber + "\t" +
                               "Source - CAN Channel " + channel + "\t" + 
-                              "Destination - " + destinationAddress + ":" + port
+                              "Destination - " + targetIpAddress + ":" + port
             );
             
             ///////////////////////////////////////
